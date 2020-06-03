@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:6080
+    environment:
+      GESTION_DDSSP_ENV: docker
+    volumes:
+      - ./gestion_ddsp:/code
+    ports:
+      - "6080:6080"
+    networks:
+      - database_bdd
+
+networks:
+  database_bdd:
+    external: true

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Not base title{% endblock %}
+
+{% block head %}
+    <script src="{% static 'autocomplete.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
+
+{% endblock %}
+
+{% block body %}
+    <script>$('#navbar_gestion').addClass("active")</script>
+    <div class="row text-center">
+        <form autocomplete="off" id="search_form" class="row ml-auto mr-auto mt-2" action="">
+          <div class="autocomplete" style="width:300px; margin-left: auto">
+            <input id="search" class="col-12" type="text" name="DirectionSearch" placeholder="Direction">
+          </div>
+        </form>
+    </div>
+    <script>
+        search_bar = document.getElementById('search')
+        search_bar.addEventListener('input', function (evt) {
+            text = search_bar.value
+            $.ajax({
+                type: "POST",
+                url: "{% url 'search_engine' %}",
+                data: {
+                    text: text,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data.propositions.length <= 10 && data.propositions.length > 0)
+                        autocomplete(search_bar, data.propositions)
+                    else {
+                        closeAllLists()
+                    }
+                }
+            })
+        });
+    </script>
+{% endblock %}

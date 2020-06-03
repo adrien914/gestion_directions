@@ -1,0 +1,26 @@
+from django.db import models
+
+
+class Direction(models.Model):
+    map_code = models.CharField(unique=True, max_length=255)
+    name = models.CharField(unique=True, max_length=255)
+
+    @staticmethod
+    def generate_all():
+        Direction.create(map_code="FR-01", name="DDSP-01")
+        for i in range(3, 96):
+            Direction.create(map_code="FR-{:02d}".format(i), name="DDSP-{:02d}".format(i))
+        Direction.create(map_code="FR-2A", name="DDSP-2A")
+        Direction.create(map_code="FR-2B", name="DDSP-2B")
+        Direction.create(map_code="DZPAF", name="DZPAF")
+        Direction.create(map_code="DRCPN", name="DRCPN")
+        Direction.create(map_code="DCRFPN", name="DCRFPN")
+
+
+    @staticmethod
+    def create(map_code, name):
+        try:
+            Direction.objects.create(map_code=map_code, name=name)
+        except Exception as e:
+            print("The direction {} wasn't created because {}".format(name, str(e)))
+            return
