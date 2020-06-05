@@ -53,11 +53,31 @@ document.addEventListener("click", function (e) {
     closeAllLists(e.target);
 })
 
-
-
  $(document).ready(function() {
     $("#search_form").submit(function(event) {
         event.preventDefault()
         location.href = "/gestion/" + document.getElementById('search').value
     })
 })
+
+ function set_listener(csrf_token){
+    search_bar = document.getElementById('search')
+    search_bar.addEventListener('input', function (evt) {
+        text = search_bar.value
+        $.ajax({
+            type: "POST",
+            url: "/search_engine/",
+            data: {
+                text: text,
+                csrfmiddlewaretoken: csrf_token
+            },
+            success: function (data) {
+                if (data.propositions.length <= 10 && data.propositions.length > 0)
+                    autocomplete(search_bar, data.propositions)
+                else {
+                    closeAllLists()
+                }
+            }
+        })
+    });
+ }

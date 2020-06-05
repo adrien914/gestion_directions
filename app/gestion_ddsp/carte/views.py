@@ -7,6 +7,8 @@ class Index(View):
 
     @staticmethod
     def get(request):
+        if len(Direction.objects.all()) < 90:
+            Direction.generate_all()
         req = request.GET
         test = req.get("test", "")
         data = {'test': test}

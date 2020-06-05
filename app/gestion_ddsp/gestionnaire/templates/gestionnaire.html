@@ -5,38 +5,158 @@
 
 {% block head %}
     <script src="{% static 'autocomplete.js' %}"></script>
+    <script src="{% static 'change_site_state.js' %}"></script>
+    <script src="{% static 'change_hebergement.js' %}"></script>
+    <script src="{% static 'hebergeur.js' %}"></script>
     <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
-
 {% endblock %}
 
 {% block body %}
     <script>$('#navbar_gestion').addClass("active")</script>
-    <div class="row text-center">
-        <form autocomplete="off" id="search_form" class="row ml-auto mr-auto mt-2" action="">
-          <div class="autocomplete" style="width:300px; margin-left: auto">
-            <input id="search" class="col-12" type="text" name="DirectionSearch" placeholder="Direction">
-          </div>
-        </form>
+    <div class="text-center jumbotron">
+        <section id="search_input_section" class="row text-center">
+            <form autocomplete="off" id="search_form" class="row ml-auto mr-auto" action="">
+              <div class="autocomplete" style="width:300px; margin-left: auto">
+                <input id="search" class="col-12 text-center form-control bg-white border-dark" type="text" name="DirectionSearch" placeholder="{{ direction.name }}">
+              </div>
+            </form>
+        </section>
+        {% if direction %}
+            <section id="etat_site_section">
+                <div class="bg-white text-center rounded-pill">
+                    <h2 class="col-12">Etat du site</h2>
+                    <div class="col-12 btn-toolbar">
+                        {% for etat_site in etats_site %}
+                            <button id="{{ etat_site.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2" style="background: {{ etat_site.color }}"
+                                    onclick="change_site_state('{{ etat_site.name }}', '{{ direction.name }}', '{{ csrf_token }}')">
+                                    {{ etat_site.name }}
+                                    {% if etat_site.name == direction.etat_site.name %}
+                                        <i id="icon_active_site_state" class="far fa-check-circle faa-check-circle animated faa-4x"></i>
+                                    {% endif %}
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                        <div class="alert" id="alert_div_etat_site"></div>
+                    </div>
+                </div>
+            </section>
+            <section id="hebergement_section" class="mt-2">
+                <div class="bg-white text-center rounded-pill">
+                    <h2 class="col-12">Hebergement</h2>
+                    <div class="col-12 btn-toolbar">
+                        {% for hebergement in hebergements %}
+                            <button id="{{ hebergement.type }}" class="btn btn-primary mt-1 mb-1 ml-auto mr-auto col-2"
+                                    onclick="change_hebergement('{{ hebergement.type }}', '{{ direction.name }}', '{{ csrf_token }}')">
+                                {{ hebergement.type }} {% if direction.hebergement.type == hebergement.type %}
+                                <i id="icon_active_hebergement" class="far fa-check-circle faa-check-circle animated faa-4x"></i>{% endif %}
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                        <div class="alert" id="alert_div_hebergement"></div>
+                    </div>
+                </div>
+            </section>
+            <section id="hebergeurs_section" class="mt-2">
+                <div class="bg-white text-center rounded-pill">
+                    <h2 class="col-12">Hebergeurs</h2>
+                    <div class="col-12 btn-toolbar">
+                    {% for hebergeur in hebergeurs %}
+                        <button type="button" class="btn btn-primary mt-1 mb-1 ml-auto mr-auto col-5" data-toggle="modal"
+                                data-target="#hebergeur-modal{{ hebergeur.id }}">{{ hebergeur.email }}</button>
+                        <div class="modal fade" id="hebergeur-modal{{ hebergeur.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Infos sur {{ hebergeur.email }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form>
+                                  <div class="form-group">
+                                    <label for="hebergeur_nom{{ hebergeur.id }}" class="col-form-label">Nom:</label>
+                                    <input type="text" class="form-control" id="hebergeur_nom{{ hebergeur.id }}" value="{{ hebergeur.nom }}">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="hebergeur_prenom{{ hebergeur.id }}" class="col-form-label">Prénom:</label>
+                                    <input type="text" class="form-control" id="hebergeur_prenom{{ hebergeur.id }}" value="{{ hebergeur.prenom }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="hebergeur_email{{ hebergeur.id }}" class="col-form-label">Email:</label>
+                                    <input type="text" class="form-control" id="hebergeur_email{{ hebergeur.id }}" value="{{ hebergeur.email }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="hebergeur_tel{{ hebergeur.id }}" class="col-form-label">Téléphone:</label>
+                                    <input type="text" class="form-control" id="hebergeur_tel{{ hebergeur.id }}" value="{{ hebergeur.telephone }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="hebergeur_autres{{ hebergeur.id }}" class="col-form-label">Autres:</label>
+                                    <textarea class="form-control" id="hebergeur_autres{{ hebergeur.id }}" >{{ hebergeur.autres }}</textarea>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur({{ hebergeur.id }}, '{{ csrf_token }}')">Modifier</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    {% endfor %}
+                    <div class="w-100"></div>
+                    <button type="button" class="btn btn-danger mt-1 mb-1 ml-auto mr-auto col-5" data-toggle="modal"
+                                data-target="#create_hebergeur_modal"><i class="far fa-plus-square"></i></button>
+                        <div class="modal fade" id="create_hebergeur_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Nouvel hebergeur</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form>
+                                  <div class="form-group">
+                                    <label for="hebergeur_nom_create" class="col-form-label">Nom:</label>
+                                    <input type="text" class="form-control" id="hebergeur_nom_create" value="">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="hebergeur_prenom_create" class="col-form-label">Prénom:</label>
+                                    <input type="text" class="form-control" id="hebergeur_prenom_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="hebergeur_email_create" class="col-form-label">Email:</label>
+                                    <input type="text" class="form-control" id="hebergeur_email_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="hebergeur_tel_create" class="col-form-label">Téléphone:</label>
+                                    <input type="text" class="form-control" id="hebergeur_tel_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="hebergeur_autres_create" class="col-form-label">Autres:</label>
+                                    <textarea class="form-control" id="hebergeur_autres_create" ></textarea>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur('_create', {{ direction.id }} '{{ csrf_token }}')">Modifier</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                        <div class="alert" id="alert_div_hebergement"></div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
     </div>
-    <script>
-        search_bar = document.getElementById('search')
-        search_bar.addEventListener('input', function (evt) {
-            text = search_bar.value
-            $.ajax({
-                type: "POST",
-                url: "{% url 'search_engine' %}",
-                data: {
-                    text: text,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function (data) {
-                    if (data.propositions.length <= 10 && data.propositions.length > 0)
-                        autocomplete(search_bar, data.propositions)
-                    else {
-                        closeAllLists()
-                    }
-                }
-            })
-        });
-    </script>
+    <div id="modal"></div>
+    <script>set_listener('{{ csrf_token }}');</script>
 {% endblock %}

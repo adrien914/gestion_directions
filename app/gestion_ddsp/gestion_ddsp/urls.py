@@ -24,5 +24,9 @@ urlpatterns = [
     path('generate_all/', carte_views.GenerateDirections.as_view()),
     path('gestion/', gestionnaire_views.Gestionnaire.as_view(), name='gestionnaire_empty'),
     path('gestion/<str:direction>/', gestionnaire_views.Gestionnaire.as_view(), name='gestionnaire'),
-    path('search_engine/', gestionnaire_views.SearchEngine.as_view(), name='search_engine')
+    path('search_engine/', gestionnaire_views.SearchEngine.as_view(), name='search_engine'),
+    path('change_site_state/', gestionnaire_views.ChangeSiteState.as_view(), name='change_site_state'),
+    path('change_hebergement/', gestionnaire_views.ChangeHebergement.as_view(), name='change_hebergement'),
+    path('create_or_modify_hebergeur/', gestionnaire_views.createOrModifyHebergeur.as_view(), name='create_or_modify_hebergeur'),
+
 ]
