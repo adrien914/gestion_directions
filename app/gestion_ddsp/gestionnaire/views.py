@@ -11,6 +11,8 @@ class Gestionnaire(View):
 
     @staticmethod
     def get(request, direction: str = None):
+        if not request.user.is_authenticated:
+            return render(request, "connection.html")
         context = {}
         if direction:
             try:

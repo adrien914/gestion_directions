@@ -3,11 +3,15 @@ from django.views import View
 from carte.models import Direction
 from django.http import JsonResponse
 import json
+from django.contrib.auth import authenticate, login
 
 class Index(View):
 
+
     @staticmethod
     def get(request):
+        if not request.user.is_authenticated:
+            return render(request, "connection.html")
         if len(Direction.objects.all()) < 90:
             Direction.generate_all()
         directions = Direction.objects.all()
@@ -19,7 +23,21 @@ class Index(View):
         context = {'directions': directions, "regions_colors": json.dumps(regions_colors)}
         return render(request, "index.html", context)
 
-
+    @staticmethod
+    def post(request):
+        try:
+            data = request.POST
+            user = authenticate(request, username=data["username"], password=data["password"])
+            if user is not None:
+                login(request, user)
+                response = JsonResponse({"message": "success"})
+                response.status_code = 200
+            return response
+        except Exception as e:
+            print(e)
+            response = JsonResponse({"message": "error"})
+            response.status_code = 500
+            return response
 class GenerateDirections(View):
 
     @staticmethod

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Not base title{% endblock %}
+{% block title %}{% if direction %}{{ direction.name }}{% else %}Gestion des directions{% endif %}{% endblock %}
 
 {% block head %}
     <script src="{% static 'autocomplete.js' %}"></script>

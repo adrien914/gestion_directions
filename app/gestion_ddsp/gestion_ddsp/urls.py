@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path
 import carte.views as carte_views
 import gestionnaire.views as gestionnaire_views
+from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path('', carte_views.Index.as_view(), name='carte'),
@@ -33,4 +35,5 @@ urlpatterns = [
     path('delete_contact/', gestionnaire_views.DeleteContact.as_view(), name='delete_hebergeur'),
     path('save_stagiaire/', gestionnaire_views.SaveStagiaire.as_view(), name='save_stagiaire'),
     path('admin/', admin.site.urls),
+    path("logout/", LogoutView.as_view(), name="logout"),
 ]

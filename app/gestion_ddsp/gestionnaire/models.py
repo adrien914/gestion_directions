@@ -1,8 +1,9 @@
 from django.db import models
+from colorfield.fields import ColorField
 
 class EtatSite(models.Model):
     name = models.CharField(max_length=255)
-    color = models.CharField(max_length=255)
+    color = ColorField(default="#FFFFFF")
 
     @staticmethod
     def generate_all():
