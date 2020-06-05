@@ -19,7 +19,8 @@
         <section id="search_input_section" class="row text-center">
             <form autocomplete="off" id="search_form" class="row ml-auto mr-auto" action="">
               <div class="autocomplete" style="width:300px; margin-left: auto">
-                <input id="search" class="col-12 text-center form-control bg-white border-dark" type="text" name="DirectionSearch" placeholder="{{ direction.name }}">
+                <input id="search" class="col-12 text-center form-control bg-white border-dark"
+                       type="text" name="DirectionSearch" placeholder="{% if direction %}{{ direction.name }}{% else %}Choisissez une direction centrale{% endif %}">
               </div>
             </form>
         </section>
@@ -29,7 +30,7 @@
                     <h2 class="col-12">Etat du site</h2>
                     <div class="col-12 btn-toolbar">
                         {% for etat_site in etats_site %}
-                            <button id="{{ etat_site.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2 zoom" style="background: {{ etat_site.color }}"
+                            <button id="{{ etat_site.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2 border-dark zoom" style="background: {{ etat_site.color }}"
                                     onclick="change_site_state('{{ etat_site.name }}', '{{ direction.name }}', '{{ csrf_token }}')">
                                     {{ etat_site.name }}
                                     {% if etat_site.name == direction.etat_site.name %}
@@ -48,7 +49,7 @@
                     <h2 class="col-12">Hebergement</h2>
                     <div class="col-12 btn-toolbar">
                         {% for hebergement in hebergements %}
-                            <button id="{{ hebergement.type }}" class="btn btn-info mt-1 mb-1 ml-auto mr-auto col-2 zoom"
+                            <button id="{{ hebergement.type }}" class="btn btn-info mt-1 mb-1 ml-auto mr-auto col-2 border-dark zoom"
                                     onclick="change_hebergement('{{ hebergement.type }}', '{{ direction.name }}', '{{ csrf_token }}')">
                                 {{ hebergement.type }} {% if direction.hebergement.type == hebergement.type %}
                                 <i id="icon_active_hebergement" class="far fa-check-circle faa-check-circle animated faa-4x"></i>{% endif %}
@@ -68,11 +69,11 @@
 
                         <!-- Boutons pour ouvrir le modal correspondant et supprimer l'hebergeur -->
                         <button id="hebergeur_edit_button{{ hebergeur.id }}"
-                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 zoom" data-toggle="modal"
+                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 border-dark zoom" data-toggle="modal"
                                 data-target="#hebergeur-modal{{ hebergeur.id }}">{{ hebergeur.email }}</button>
                         <button id="hebergeur_delete_button{{ hebergeur.id }}"
                                 onclick="delete_hebergeur({{ hebergeur.id }}, '{{ csrf_token }}')"
-                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
+                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 border-dark zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
                         <!-- _______________________________________________________________________ -->
                         <!-- Modal correspondant a l'hebergeur -->
                         <div class="modal fade" id="hebergeur-modal{{ hebergeur.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -119,7 +120,7 @@
                         {% endfor %}
                         <div id="end_hebergeurs" class="w-100"></div>
                         <!-- Bouton et modal pour créer un nouvel hébergeur -->
-                        <button type="button" id="hebergeur_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto zoom" data-toggle="modal"
+                        <button type="button" id="hebergeur_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto border-dark zoom" data-toggle="modal"
                                 data-target="#hebergeur-modal_create"><i class="far fa-plus-square"></i></button>
                         <div class="modal fade" id="hebergeur-modal_create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">
@@ -173,11 +174,11 @@
 
                         <!-- Boutons pour ouvrir le modal correspondant et supprimer l'contact -->
                         <button id="contact_edit_button{{ contact.id }}"
-                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 zoom" data-toggle="modal"
+                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 border-dark zoom" data-toggle="modal"
                                 data-target="#contact-modal{{ contact.id }}">{{ contact.email }}</button>
                         <button id="contact_delete_button{{ contact.id }}"
                                 onclick="delete_contact({{ contact.id }}, '{{ csrf_token }}')"
-                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
+                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 border-dark zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
                         <!-- _______________________________________________________________________ -->
                         <!-- Modal correspondant a l'contact -->
                         <div class="modal fade" id="contact-modal{{ contact.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -224,7 +225,7 @@
                         {% endfor %}
                         <div id="end_contacts" class="w-100"></div>
                         <!-- Bouton et modal pour créer un nouvel hébergeur -->
-                        <button type="button" id="contact_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto zoom" data-toggle="modal"
+                        <button type="button" id="contact_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto border-dark zoom" data-toggle="modal"
                                 data-target="#contact-modal_create"><i class="far fa-plus-square"></i></button>
                         <div class="modal fade" id="contact-modal_create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">

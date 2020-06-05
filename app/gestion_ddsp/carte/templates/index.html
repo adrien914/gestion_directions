@@ -4,26 +4,59 @@
 {% block title %}Not base title{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{% static 'jquery-jvectormap-2.0.5.css' %}">
+    <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
     <script src="{% static 'jquery-jvectormap-2.0.5.min.js' %}"></script>
     <script src="{% static 'jquery-jvectormap-fr-merc.js' %}"></script>
+
 {% endblock %}
 
 {% block body %}
         <div id="map" class="col-12 h-75"></div>
         <script>
             $('#navbar_carte').addClass("active")
-            $('#map').vectorMap({
+            map = $('#map').vectorMap({
                 map: 'fr_merc',
                 height: 700,
                 width: 600,
                 onRegionTipShow: function(e, el, code){
-                    array = code.split('-')
-                    dpt_code = array[array.length - 1]
-                    el.html(code);
+                    document.getElementsByClassName("jvectormap-tip")[0].style.visibility = "hidden"
+                    $.ajax({
+                        url: "/get_ddsp_name/",
+                        type: "POST",
+                        data: {code: code, csrfmiddlewaretoken:'{{ csrf_token }}'},
+                        success: function (data) {
+                            el.html(data.name);
+                            document.getElementsByClassName("jvectormap-tip")[0].style.visibility = "visible"
+                        },
+                        error: function () {
+                            el.html(code);
+                            document.getElementsByClassName("jvectormap-tip")[0].style.visibility = "visible"
+                        }
+                    })
                 },
                 onRegionClick: function (e, code) {
                     location.href = "{% url 'gestionnaire' "placeholder" %}".replace("placeholder", code)
+                },
+                series: {
+                  regions: [{
+                    values: {% autoescape off %}{{ regions_colors }}{% endautoescape %}
+                  }]
                 }
             })
         </script>
+    <div class="bg-white text-center rounded">
+        <h2 class="col-12">Autres directions</h2>
+        <div class="col-12 btn-toolbar">
+            {% for direction in directions %}
+                {% if 'DDSP-' not in direction.name %}
+                    <a href="/gestion/{{ direction.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2 border-dark zoom" style="background: {{ direction.etat_site.color }}">
+                        {{ direction.name }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+            <div class="alert" id="alert_div_etat_site"></div>
+        </div>
+    </div>
 {% endblock %}

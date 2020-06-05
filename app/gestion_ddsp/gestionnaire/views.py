@@ -23,7 +23,10 @@ class Gestionnaire(View):
             hebergements = Hebergement.objects.all()
             hebergeurs = Hebergeur.objects.filter(direction=direction)
             contacts = Contact.objects.filter(direction=direction)
-            stagiaire = Stagiaire.objects.get(direction=direction)
+            try:
+                stagiaire = Stagiaire.objects.get(direction=direction)
+            except ObjectDoesNotExist:
+                stagiaire = None
             context.update({
                 "etats_site": etats_sites,
                 "hebergements": hebergements,
@@ -64,7 +67,6 @@ class ChangeSiteState(View):
             state = request.POST["state"]  # get the new state for the direction in the request
             state = EtatSite.objects.get(name=state)  # get the EtatSite corresponding to the name in the request
             direction.etat_site = state  # set the direction's etat_site to it
-            print(state)
             direction.save()  # save the changes
             return JsonResponse({"code": 200, "new_state": state.name})
         except Exception as e:

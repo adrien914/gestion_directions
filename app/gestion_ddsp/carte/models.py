@@ -9,11 +9,14 @@ class Hebergement(models.Model):
         return self.type
 
 
+base_etat_site = EtatSite.objects.all()[0]
+
+
 class Direction(models.Model):
     map_code = models.CharField(unique=True, max_length=255)
     name = models.CharField(unique=True, max_length=255)
-    etat_site = models.ForeignKey(to=EtatSite, on_delete=models.CASCADE, default=None, null=True)
-    hebergement = models.ForeignKey(to=Hebergement, on_delete=models.CASCADE, default=None, null=True)
+    etat_site = models.ForeignKey(to=EtatSite, on_delete=models.CASCADE, default=base_etat_site.id, null=True)
+    hebergement = models.ForeignKey(to=Hebergement, on_delete=models.CASCADE, default=base_etat_site.id, null=True)
 
     @staticmethod
     def generate_all():
@@ -22,6 +25,11 @@ class Direction(models.Model):
             Direction.create(map_code="FR-{:02d}".format(i), name="DDSP-{:02d}".format(i))
         Direction.create(map_code="FR-2A", name="DDSP-2A")
         Direction.create(map_code="FR-2B", name="DDSP-2B")
+        Direction.create(map_code="FR-GP", name="DDSP-971")
+        Direction.create(map_code="FR-MQ", name="DDSP-972")
+        Direction.create(map_code="FR-GF", name="DDSP-973")
+        Direction.create(map_code="FR-RE", name="DDSP-974")
+        Direction.create(map_code="FR-YT", name="DDSP-976")
         Direction.create(map_code="DZPAF", name="DZPAF")
         Direction.create(map_code="DRCPN", name="DRCPN")
         Direction.create(map_code="DCRFPN", name="DCRFPN")

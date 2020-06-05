@@ -20,8 +20,8 @@ import gestionnaire.views as gestionnaire_views
 
 urlpatterns = [
     path('', carte_views.Index.as_view(), name='carte'),
-    path('admin/', admin.site.urls),
     path('generate_all/', carte_views.GenerateDirections.as_view()),
+    path('get_ddsp_name/', carte_views.GetDdspName.as_view(), name='get_ddsp_name'),
     path('gestion/', gestionnaire_views.Gestionnaire.as_view(), name='gestionnaire_empty'),
     path('gestion/<str:direction>/', gestionnaire_views.Gestionnaire.as_view(), name='gestionnaire'),
     path('search_engine/', gestionnaire_views.SearchEngine.as_view(), name='search_engine'),
@@ -32,4 +32,5 @@ urlpatterns = [
     path('create_or_modify_contact/', gestionnaire_views.createOrModifyContact.as_view(), name='create_or_modify_hebergeur'),
     path('delete_contact/', gestionnaire_views.DeleteContact.as_view(), name='delete_hebergeur'),
     path('save_stagiaire/', gestionnaire_views.SaveStagiaire.as_view(), name='save_stagiaire'),
+    path('admin/', admin.site.urls),
 ]
