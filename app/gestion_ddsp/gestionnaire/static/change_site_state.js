@@ -12,7 +12,6 @@ function change_site_state(new_state, direction, csrf_token) {
             csrfmiddlewaretoken: csrf_token
         },
         success: function (data) {
-            console.log(data)
             /* get the alert div to show the success message in it */
             div = $('#alert_div_etat_site')
             div.addClass("alert-success")

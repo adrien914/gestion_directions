@@ -28,5 +28,8 @@ urlpatterns = [
     path('change_site_state/', gestionnaire_views.ChangeSiteState.as_view(), name='change_site_state'),
     path('change_hebergement/', gestionnaire_views.ChangeHebergement.as_view(), name='change_hebergement'),
     path('create_or_modify_hebergeur/', gestionnaire_views.createOrModifyHebergeur.as_view(), name='create_or_modify_hebergeur'),
-
+    path('delete_hebergeur/', gestionnaire_views.DeleteHebergeur.as_view(), name='delete_hebergeur'),
+    path('create_or_modify_contact/', gestionnaire_views.createOrModifyContact.as_view(), name='create_or_modify_hebergeur'),
+    path('delete_contact/', gestionnaire_views.DeleteContact.as_view(), name='delete_hebergeur'),
+    path('save_stagiaire/', gestionnaire_views.SaveStagiaire.as_view(), name='save_stagiaire'),
 ]

@@ -8,6 +8,8 @@
     <script src="{% static 'change_site_state.js' %}"></script>
     <script src="{% static 'change_hebergement.js' %}"></script>
     <script src="{% static 'hebergeur.js' %}"></script>
+    <script src="{% static 'contact.js' %}"></script>
+    <script src="{% static 'stagiaires.js' %}"></script>
     <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
 {% endblock %}
 
@@ -23,11 +25,11 @@
         </section>
         {% if direction %}
             <section id="etat_site_section">
-                <div class="bg-white text-center rounded-pill">
+                <div class="bg-white text-center rounded">
                     <h2 class="col-12">Etat du site</h2>
                     <div class="col-12 btn-toolbar">
                         {% for etat_site in etats_site %}
-                            <button id="{{ etat_site.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2" style="background: {{ etat_site.color }}"
+                            <button id="{{ etat_site.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2 zoom" style="background: {{ etat_site.color }}"
                                     onclick="change_site_state('{{ etat_site.name }}', '{{ direction.name }}', '{{ csrf_token }}')">
                                     {{ etat_site.name }}
                                     {% if etat_site.name == direction.etat_site.name %}
@@ -42,11 +44,11 @@
                 </div>
             </section>
             <section id="hebergement_section" class="mt-2">
-                <div class="bg-white text-center rounded-pill">
+                <div class="bg-white text-center rounded">
                     <h2 class="col-12">Hebergement</h2>
                     <div class="col-12 btn-toolbar">
                         {% for hebergement in hebergements %}
-                            <button id="{{ hebergement.type }}" class="btn btn-primary mt-1 mb-1 ml-auto mr-auto col-2"
+                            <button id="{{ hebergement.type }}" class="btn btn-info mt-1 mb-1 ml-auto mr-auto col-2 zoom"
                                     onclick="change_hebergement('{{ hebergement.type }}', '{{ direction.name }}', '{{ csrf_token }}')">
                                 {{ hebergement.type }} {% if direction.hebergement.type == hebergement.type %}
                                 <i id="icon_active_hebergement" class="far fa-check-circle faa-check-circle animated faa-4x"></i>{% endif %}
@@ -59,12 +61,20 @@
                 </div>
             </section>
             <section id="hebergeurs_section" class="mt-2">
-                <div class="bg-white text-center rounded-pill">
+                <div class="bg-white text-center rounded">
                     <h2 class="col-12">Hebergeurs</h2>
-                    <div class="col-12 btn-toolbar">
+                    <div id="hebergeurs-buttons" class="col-12 btn-toolbar">
                     {% for hebergeur in hebergeurs %}
-                        <button type="button" class="btn btn-primary mt-1 mb-1 ml-auto mr-auto col-5" data-toggle="modal"
+
+                        <!-- Boutons pour ouvrir le modal correspondant et supprimer l'hebergeur -->
+                        <button id="hebergeur_edit_button{{ hebergeur.id }}"
+                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 zoom" data-toggle="modal"
                                 data-target="#hebergeur-modal{{ hebergeur.id }}">{{ hebergeur.email }}</button>
+                        <button id="hebergeur_delete_button{{ hebergeur.id }}"
+                                onclick="delete_hebergeur({{ hebergeur.id }}, '{{ csrf_token }}')"
+                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
+                        <!-- _______________________________________________________________________ -->
+                        <!-- Modal correspondant a l'hebergeur -->
                         <div class="modal fade" id="hebergeur-modal{{ hebergeur.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -100,16 +110,18 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur({{ hebergeur.id }}, '{{ csrf_token }}')">Modifier</button>
+                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur({{ hebergeur.id }}, {{ direction.id }}, '{{ csrf_token }}')">Modifier</button>
                               </div>
                             </div>
                           </div>
                         </div>
-                    {% endfor %}
-                    <div class="w-100"></div>
-                    <button type="button" class="btn btn-danger mt-1 mb-1 ml-auto mr-auto col-5" data-toggle="modal"
-                                data-target="#create_hebergeur_modal"><i class="far fa-plus-square"></i></button>
-                        <div class="modal fade" id="create_hebergeur_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <!-- ____________________________________________________ -->
+                        {% endfor %}
+                        <div id="end_hebergeurs" class="w-100"></div>
+                        <!-- Bouton et modal pour créer un nouvel hébergeur -->
+                        <button type="button" id="hebergeur_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto zoom" data-toggle="modal"
+                                data-target="#hebergeur-modal_create"><i class="far fa-plus-square"></i></button>
+                        <div class="modal fade" id="hebergeur-modal_create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
@@ -144,19 +156,132 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur('_create', {{ direction.id }} '{{ csrf_token }}')">Modifier</button>
+                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur('_create', {{ direction.id }}, '{{ csrf_token }}')">Créer</button>
                               </div>
                             </div>
                           </div>
                         </div>
+                    <!-- __________________________________________________________ -->
                     </div>
+                </div>
+            </section>
+            <section id="contacts_section" class="mt-2">
+                <div class="bg-white text-center rounded">
+                    <h2 class="col-12">Contacts</h2>
+                    <div id="contacts-buttons" class="col-12 btn-toolbar">
+                    {% for contact in contacts %}
+
+                        <!-- Boutons pour ouvrir le modal correspondant et supprimer l'contact -->
+                        <button id="contact_edit_button{{ contact.id }}"
+                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 zoom" data-toggle="modal"
+                                data-target="#contact-modal{{ contact.id }}">{{ contact.email }}</button>
+                        <button id="contact_delete_button{{ contact.id }}"
+                                onclick="delete_contact({{ contact.id }}, '{{ csrf_token }}')"
+                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
+                        <!-- _______________________________________________________________________ -->
+                        <!-- Modal correspondant a l'contact -->
+                        <div class="modal fade" id="contact-modal{{ contact.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Infos sur {{ contact.email }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form>
+                                  <div class="form-group">
+                                    <label for="contact_nom{{ contact.id }}" class="col-form-label">Nom:</label>
+                                    <input type="text" class="form-control" id="contact_nom{{ contact.id }}" value="{{ contact.nom }}">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contact_prenom{{ contact.id }}" class="col-form-label">Prénom:</label>
+                                    <input type="text" class="form-control" id="contact_prenom{{ contact.id }}" value="{{ contact.prenom }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="contact_email{{ contact.id }}" class="col-form-label">Email:</label>
+                                    <input type="text" class="form-control" id="contact_email{{ contact.id }}" value="{{ contact.email }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="contact_tel{{ contact.id }}" class="col-form-label">Téléphone:</label>
+                                    <input type="text" class="form-control" id="contact_tel{{ contact.id }}" value="{{ contact.telephone }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="contact_autres{{ contact.id }}" class="col-form-label">Autres:</label>
+                                    <textarea class="form-control" id="contact_autres{{ contact.id }}" >{{ contact.autres }}</textarea>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                <button type="button" class="btn btn-primary" onclick="modifier_contact({{ contact.id }}, {{ direction.id }}, '{{ csrf_token }}')">Modifier</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- ____________________________________________________ -->
+                        {% endfor %}
+                        <div id="end_contacts" class="w-100"></div>
+                        <!-- Bouton et modal pour créer un nouvel hébergeur -->
+                        <button type="button" id="contact_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto zoom" data-toggle="modal"
+                                data-target="#contact-modal_create"><i class="far fa-plus-square"></i></button>
+                        <div class="modal fade" id="contact-modal_create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Nouvel contact</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form>
+                                  <div class="form-group">
+                                    <label for="contact_nom_create" class="col-form-label">Nom:</label>
+                                    <input type="text" class="form-control" id="contact_nom_create" value="">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contact_prenom_create" class="col-form-label">Prénom:</label>
+                                    <input type="text" class="form-control" id="contact_prenom_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="contact_email_create" class="col-form-label">Email:</label>
+                                    <input type="text" class="form-control" id="contact_email_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="contact_tel_create" class="col-form-label">Téléphone:</label>
+                                    <input type="text" class="form-control" id="contact_tel_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="contact_autres_create" class="col-form-label">Autres:</label>
+                                    <textarea class="form-control" id="contact_autres_create" ></textarea>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                <button type="button" class="btn btn-primary" onclick="modifier_contact('_create', {{ direction.id }}, '{{ csrf_token }}')">Créer</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    <!-- __________________________________________________________ -->
+                    </div>
+                </div>
+            </section>
+            <section id="stagaires_section" class="mt-2">
+                <div class="bg-white text-center rounded">
+                    <h2 class="col-12 form-group">Stagiaires</h2>
+                    <textarea class="col-10 m-auto form-control" id="stagiaire-input" placeholder="Informations sur les stagiaires">{{ stagiaire.divers }}</textarea>
                     <div class="text-center col-8 m-auto pt-2" style="height: 10%">
-                        <div class="alert" id="alert_div_hebergement"></div>
+                        <div class="alert" id="alert_div_stagiaire"></div>
                     </div>
                 </div>
             </section>
         {% endif %}
     </div>
     <div id="modal"></div>
-    <script>set_listener('{{ csrf_token }}');</script>
+    <input type="hidden" value="{{ direction.id }}" id="direction-id">
+    <script>set_listener('{{ csrf_token }}'); set_listener_stagiaire('{{ csrf_token }}')</script>
 {% endblock %}

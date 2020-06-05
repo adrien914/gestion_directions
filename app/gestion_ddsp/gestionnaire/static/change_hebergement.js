@@ -12,7 +12,6 @@ function change_hebergement(type_hebergement, direction, csrf_token) {
             csrfmiddlewaretoken: csrf_token
         },
         success: function (data) {
-            console.log(data)
             /* get the alert div to show the success message in it */
             div = $('#alert_div_hebergement')
             div.addClass("alert-success")

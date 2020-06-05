@@ -50,6 +50,7 @@ input[type=submit] {
 }
 /* ----------------------------------------------------- */
 
+/* checkmark animation */
 @keyframes checkmark {
   0% {
     -webkit-transform: rotate(-12deg);
@@ -145,9 +146,19 @@ input[type=submit] {
 .faa-check-circle.animated,
 .faa-check-circle.animated-hover:hover,
 .faa-parent.animated-hover:hover > .faa-check-circle {
-  -webkit-animation: wrench 2.5s ease infinite;
   animation: checkmark 4s ease infinite;
-  transform-origin-x: 90%;
-  transform-origin-y: 35%;
-  transform-origin-z: initial;
+}
+
+.faa-trash-alt.animated-hover:hover,
+.faa-parent.animated-hover:hover > .faa-trash-alt {
+  animation: checkmark 1s ease;
+}
+/* ------------------------------------------ */
+
+.zoom {
+  transition: transform .2s; /* Animation */
+}
+
+.zoom:hover {
+  transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
