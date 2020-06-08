@@ -21,7 +21,7 @@ from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
-    path('', carte_views.Index.as_view(), name='carte'),
+    path('', carte_views.Index.as_view(), name='index'),
     path('generate_all/', carte_views.GenerateDirections.as_view()),
     path('get_ddsp_name/', carte_views.GetDdspName.as_view(), name='get_ddsp_name'),
     path('gestion/', gestionnaire_views.Gestionnaire.as_view(), name='gestionnaire_empty'),

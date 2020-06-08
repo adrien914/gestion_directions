@@ -5,6 +5,12 @@ from gestionnaire.models import EtatSite
 class Hebergement(models.Model):
     type = models.CharField(max_length=255, default=None, null=True)
 
+    def generate_all(self):
+        Hebergement.objects.create(type='local')
+        Hebergement.objects.create(type='SGAMI')
+        Hebergement.objects.create(type='DRCPN')
+
+
     def __str__(self):
         return self.type
 
