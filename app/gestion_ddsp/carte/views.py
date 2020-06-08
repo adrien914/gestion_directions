@@ -21,7 +21,6 @@ class Index(View):
         for direction in directions:
             if 'FR-' in direction.map_code:
                 regions_colors[direction.map_code] = direction.etat_site.color
-        print(regions_colors)
         context = {'directions': directions, "regions_colors": json.dumps(regions_colors)}
         return render(request, "index.html", context)
 
