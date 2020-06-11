@@ -46,12 +46,14 @@
         </script>
     <div class="bg-white text-center rounded">
         <h2 class="col-12">Autres directions</h2>
-        <div class="col-12 btn-toolbar">
+        <div class="col-12 btn-toolbar text-center">
             {% for direction in directions %}
                 {% if 'DDSP-' not in direction.name %}
-                    <a href="/gestion/{{ direction.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2 border-dark zoom" style="background: {{ direction.etat_site.color }}">
+                    <div class="col-4 ml-auto mr-auto">
+                    <a href="/gestion/{{ direction.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-10 border-dark zoom" style="background: {{ direction.etat_site.color }}">
                         {{ direction.name }}
                     </a>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>

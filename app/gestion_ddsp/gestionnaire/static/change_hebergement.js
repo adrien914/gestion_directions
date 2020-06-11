@@ -15,7 +15,7 @@ function change_hebergement(type_hebergement, direction, csrf_token) {
             /* get the alert div to show the success message in it */
             div = $('#alert_div_hebergement')
             div.addClass("alert-success")
-            div.empty().show().html("Modifié avec succès").delay(5000).fadeOut(600);
+            div.empty().html("Modifié avec succès").fadeIn(1000).delay(3000).fadeOut(600);
             /* Show the checkmark on the button corresponding to the new state */
             show_active_state(data)
         },
@@ -23,7 +23,7 @@ function change_hebergement(type_hebergement, direction, csrf_token) {
             /* get the alert div to show the error message in it */
             div = $('#alert_div_hebergement')
             div.addClass("alert-danger")
-            div.empty().show().html("Erreur a la modification").delay(5000).fadeOut(300);
+            div.empty().html("Erreur a la modification").fadeIn(1000).delay(3000).fadeOut(300);
         }
     })
 }

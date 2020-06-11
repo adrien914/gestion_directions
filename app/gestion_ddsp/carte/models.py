@@ -1,11 +1,12 @@
 from django.db import models
-from gestionnaire.models import EtatSite
+from colorfield.fields import ColorField
 
 
 class Hebergement(models.Model):
-    type = models.CharField(max_length=255, default=None, null=True)
+    type = models.CharField(max_length=255, unique=True, default=None, null=True)
 
-    def generate_all(self):
+    @staticmethod
+    def generate_all():
         Hebergement.objects.create(type='local')
         Hebergement.objects.create(type='SGAMI')
         Hebergement.objects.create(type='DRCPN')
@@ -15,19 +16,32 @@ class Hebergement(models.Model):
         return self.type
 
 
-base_etat_site = EtatSite.objects.all()[0]
+class EtatSite(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    color = ColorField(default="#FFFFFF")
+
+    @staticmethod
+    def generate_all():
+        EtatSite.objects.create(name="Pas de contacts", color="gray")
+        EtatSite.objects.create(name="Pré-Requis", color="red")
+        EtatSite.objects.create(name="DEV", color="blue")
+        EtatSite.objects.create(name="Terminé", color="green")
+
+    def __str__(self):
+        return self.name
 
 
 class Direction(models.Model):
     map_code = models.CharField(unique=True, max_length=255)
     name = models.CharField(unique=True, max_length=255)
-    etat_site = models.ForeignKey(to=EtatSite, on_delete=models.CASCADE, default=base_etat_site.id, null=True)
-    hebergement = models.ForeignKey(to=Hebergement, on_delete=models.CASCADE, default=base_etat_site.id, null=True)
+    url_site = models.CharField(max_length=255, default=None, null=True)
+    version_joomla = models.CharField(max_length=255, default=None, null=True)
+    etat_site = models.ForeignKey(to=EtatSite, on_delete=models.CASCADE, default=1, null=True)
+    hebergement = models.ForeignKey(to=Hebergement, on_delete=models.CASCADE, default=1, null=True)
 
     @staticmethod
     def generate_all():
-        Direction.create(map_code="FR-01", name="DDSP-01")
-        for i in range(3, 96):
+        for i in range(1, 96):
             Direction.create(map_code="FR-{:02d}".format(i), name="DDSP-{:02d}".format(i))
         Direction.create(map_code="FR-2A", name="DDSP-2A")
         Direction.create(map_code="FR-2B", name="DDSP-2B")
@@ -75,6 +89,7 @@ class Hebergeur(models.Model):
 
     def __str__(self):
         return self.prenom + " " + self.nom
+
 
 
 

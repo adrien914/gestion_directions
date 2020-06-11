@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate, login
-from carte.models import Direction, Hebergement
+from carte.models import Direction, Hebergement, EtatSite
 from django.shortcuts import render, redirect
-from gestionnaire.models import EtatSite
 from django.http import JsonResponse
 from django.views import View
 import json
@@ -45,9 +44,9 @@ class GenerateDirections(View):
 
     @staticmethod
     def get(request):
-        Direction.generate_all()
         EtatSite.generate_all()
         Hebergement.generate_all()
+        Direction.generate_all()
         return redirect('index')
 
 class GetDdspName(View):
@@ -62,3 +61,5 @@ class GetDdspName(View):
             response = JsonResponse({})
             response.status_code = 500
             return response
+
+

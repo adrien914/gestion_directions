@@ -1,6 +1,6 @@
  function set_listener_stagiaire(csrf_token) {
      let typingTimer;                //timer identifier
-     let doneTypingInterval = 1000;  //time in ms, 5 second for example
+     let doneTypingInterval = 500;  //time in ms, 5 second for example
      let $input = $('#stagiaire-input');
 
      //on keyup, start the countdown
@@ -30,12 +30,12 @@ function doneTyping (csrf_token) {
         success: function (data) {
             div = $('#alert_div_stagiaire')
             div.addClass("alert-success")
-            div.empty().show().html("Sauvegardé avec succès").delay(5000).fadeOut(600);
+            div.empty().html("Sauvegardé avec succès").fadeIn(1000).delay(3000).fadeOut(600);
         },
         error: function (data) {
             div = $('#alert_div_stagiaire')
             div.addClass("alert-danger")
-            div.empty().show().html("Erreur a la sauvegarde").delay(5000).fadeOut(600);
+            div.empty().html("Erreur a la sauvegarde").fadeIn(1000).delay(3000).fadeOut(600);
         },
     })
 }

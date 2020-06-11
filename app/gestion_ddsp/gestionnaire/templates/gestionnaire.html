@@ -4,12 +4,25 @@
 {% block title %}{% if direction %}{{ direction.name }}{% else %}Gestion des directions{% endif %}{% endblock %}
 
 {% block head %}
-    <script src="{% static 'autocomplete.js' %}"></script>
-    <script src="{% static 'change_site_state.js' %}"></script>
-    <script src="{% static 'change_hebergement.js' %}"></script>
-    <script src="{% static 'hebergeur.js' %}"></script>
-    <script src="{% static 'contact.js' %}"></script>
-    <script src="{% static 'stagiaires.js' %}"></script>
+    <script>
+    function set_enter_as_submit(modal_id, button_id) {
+        $(modal_id).keypress(function (e) {
+            if (e.which === 13) {
+                $(button_id).click();
+            }
+        });
+        const children = $(modal_id).find("form").children()
+        let inputs = children.find("input")
+        console.log(inputs)
+        //inputs.forEach(function (input) {
+            inputs.keypress(function (e) {
+                if (e.which === 13) {
+                    $(button_id).click();
+                }
+            });
+        //})
+    }
+    </script>
     <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
 {% endblock %}
 
@@ -22,9 +35,24 @@
                 <input id="search" class="col-12 text-center form-control bg-white border-dark"
                        type="text" name="DirectionSearch" placeholder="{% if direction %}{{ direction.name }}{% else %}Choisissez une direction centrale{% endif %}">
               </div>
+            <a href="#" class="btn btn-warning border-dark ml-1 zoom" data-toggle="modal" data-target="#ddsp_modal">
+                <i class="far fa-plus-square h-100"></i>
+            </a>
+            {% if direction %}
+            <a href="#" class="btn btn-danger border-dark ml-1 zoom" onclick="remove_ddsp('{{ direction.name }}', '{{ csrf_token }}')">
+                <i class="far fa-trash-alt h-100"></i>
+            </a>
+            {% endif %}
             </form>
         </section>
         {% if direction %}
+            <section id="site_section">
+                <div class="bg-white text-center rounded">
+                    <h2 class="col-12">Infos du site</h2>
+                    <input type="text" id="url_site" value="{{ direction.url_site }}">
+                    <input type="text" id="version_joomla" value="{{ direction.version_joomla }}" onclick="set_version_joomla()">
+                </div>
+            </section>
             <section id="etat_site_section">
                 <div class="bg-white text-center rounded">
                     <h2 class="col-12">Etat du site</h2>
@@ -40,7 +68,7 @@
                         {% endfor %}
                     </div>
                     <div class="text-center col-8 m-auto pt-2" style="height: 10%">
-                        <div class="alert" id="alert_div_etat_site"></div>
+                        <div class="alert" style="display: none" id="alert_div_etat_site"></div>
                     </div>
                 </div>
             </section>
@@ -57,7 +85,7 @@
                         {% endfor %}
                     </div>
                     <div class="text-center col-8 m-auto pt-2" style="height: 10%">
-                        <div class="alert" id="alert_div_hebergement"></div>
+                        <div class="alert hidden" style="display: none" id="alert_div_hebergement"></div>
                     </div>
                 </div>
             </section>
@@ -86,7 +114,7 @@
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <form>
+                                <form id="hebergeur_form_{{ hebergeur.id }}">
                                   <div class="form-group">
                                     <label for="hebergeur_nom{{ hebergeur.id }}" class="col-form-label">Nom:</label>
                                     <input type="text" class="form-control" id="hebergeur_nom{{ hebergeur.id }}" value="{{ hebergeur.nom }}">
@@ -111,8 +139,9 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur({{ hebergeur.id }}, {{ direction.id }}, '{{ csrf_token }}')">Modifier</button>
+                                <button id="modify_button_hebergeur{{ hebergeur.id }}" type="button" class="btn btn-primary" onclick="modifier_hebergeur({{ hebergeur.id }}, {{ direction.id }}, '{{ csrf_token }}')">Modifier</button>
                               </div>
+                            <script>set_enter_as_submit("#hebergeur-modal{{ hebergeur.id }}", "#modify_button_hebergeur{{ hebergeur.id }}")</script>
                             </div>
                           </div>
                         </div>
@@ -132,7 +161,7 @@
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <form>
+                                <form id="hebergeur_form_create">
                                   <div class="form-group">
                                     <label for="hebergeur_nom_create" class="col-form-label">Nom:</label>
                                     <input type="text" class="form-control" id="hebergeur_nom_create" value="">
@@ -157,8 +186,9 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                <button type="button" class="btn btn-primary" onclick="modifier_hebergeur('_create', {{ direction.id }}, '{{ csrf_token }}')">Créer</button>
+                                <button id="modify_button_hebergeur_create" type="button" class="btn btn-primary" onclick="modifier_hebergeur('_create', {{ direction.id }}, '{{ csrf_token }}')">Créer</button>
                               </div>
+                                <script>set_enter_as_submit("#hebergeur-modal_create", "#modify_button_hebergeur_create")</script>
                             </div>
                           </div>
                         </div>
@@ -191,7 +221,7 @@
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <form>
+                                <form id="contact_form_{{ contact.id }}">
                                   <div class="form-group">
                                     <label for="contact_nom{{ contact.id }}" class="col-form-label">Nom:</label>
                                     <input type="text" class="form-control" id="contact_nom{{ contact.id }}" value="{{ contact.nom }}">
@@ -216,15 +246,16 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                <button type="button" class="btn btn-primary" onclick="modifier_contact({{ contact.id }}, {{ direction.id }}, '{{ csrf_token }}')">Modifier</button>
+                                <button id="modify_button_contact{{ contact.id }}" type="button" class="btn btn-primary" onclick="modifier_contact({{ contact.id }}, {{ direction.id }}, '{{ csrf_token }}')">Modifier</button>
                               </div>
+                                <script>set_enter_as_submit("#contact-modal{{ contact.id }}", "#modify_button_contact{{ contact.id }}")</script>
                             </div>
                           </div>
                         </div>
                         <!-- ____________________________________________________ -->
                         {% endfor %}
                         <div id="end_contacts" class="w-100"></div>
-                        <!-- Bouton et modal pour créer un nouvel hébergeur -->
+                        <!-- Bouton et modal pour créer un nouveau contact -->
                         <button type="button" id="contact_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto border-dark zoom" data-toggle="modal"
                                 data-target="#contact-modal_create"><i class="far fa-plus-square"></i></button>
                         <div class="modal fade" id="contact-modal_create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -237,7 +268,7 @@
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <form>
+                                <form id="contact_form_create">
                                   <div class="form-group">
                                     <label for="contact_nom_create" class="col-form-label">Nom:</label>
                                     <input type="text" class="form-control" id="contact_nom_create" value="">
@@ -262,8 +293,9 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                <button type="button" class="btn btn-primary" onclick="modifier_contact('_create', {{ direction.id }}, '{{ csrf_token }}')">Créer</button>
+                                <button id="modify_button_contact_create" type="button" class="btn btn-primary" onclick="modifier_contact('_create', {{ direction.id }}, '{{ csrf_token }}')">Créer</button>
                               </div>
+                                <script>set_enter_as_submit("#contact-modal_create", "#modify_button_contact_create")</script>
                             </div>
                           </div>
                         </div>
@@ -276,13 +308,48 @@
                     <h2 class="col-12 form-group">Stagiaires</h2>
                     <textarea class="col-10 m-auto form-control" id="stagiaire-input" placeholder="Informations sur les stagiaires">{{ stagiaire.divers }}</textarea>
                     <div class="text-center col-8 m-auto pt-2" style="height: 10%">
-                        <div class="alert" id="alert_div_stagiaire"></div>
+                        <div class="alert" style="display: none" id="alert_div_stagiaire"></div>
                     </div>
                 </div>
             </section>
         {% endif %}
     </div>
+    <!-- Modal correspondant a la création d'une ddsp -->
+    <div class="modal fade" id="ddsp_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Creer une nouvelle ddsp</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="nom_ddsp_modal_create">
+              <div class="form-group">
+                <label for="nom_ddsp" class="col-form-label">Nom:</label>
+                <input type="text" class="form-control" id="nom_ddsp">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            <button id="modify_button_ddsp" type="button" class="btn btn-primary" onclick="create_ddsp('{{ csrf_token }}')">Creer</button>
+          </div>
+            <script>set_enter_as_submit("#ddsp_modal", "#modify_button_ddsp")</script>
+        </div>
+      </div>
+    </div>
+    <!-- ____________________________________________________ -->
     <div id="modal"></div>
     <input type="hidden" value="{{ direction.id }}" id="direction-id">
+    <script src="{% static 'autocomplete.js' %}"></script>
+    <script src="{% static 'change_site_state.js' %}"></script>
+    <script src="{% static 'change_hebergement.js' %}"></script>
+    <script src="{% static 'hebergeur.js' %}"></script>
+    <script src="{% static 'contact.js' %}"></script>
+    <script src="{% static 'stagiaires.js' %}"></script>
+    <script src="{% static 'create_ddsp.js' %}"></script>
+    <script src="{% static 'remove_ddsp.js' %}"></script>
     <script>set_listener('{{ csrf_token }}'); set_listener_stagiaire('{{ csrf_token }}')</script>
 {% endblock %}

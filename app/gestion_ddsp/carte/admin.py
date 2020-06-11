@@ -1,5 +1,5 @@
 from django.contrib import admin
-from carte.models import Direction, Contact, Stagiaire, Hebergeur, Hebergement
+from carte.models import Direction, Contact, Stagiaire, Hebergeur, Hebergement, EtatSite
 
 
 class AdminDirection(admin.ModelAdmin):
@@ -21,7 +21,11 @@ class AdminHebergeur(admin.ModelAdmin):
 class AdminHebergement(admin.ModelAdmin):
     list_display = ["type"]
 
+class AdminEtatSite(admin.ModelAdmin):
+    list_display = ["name", "color"]
 
+
+admin.site.register(EtatSite, AdminEtatSite)
 admin.site.register(Direction, AdminDirection)
 admin.site.register(Contact, AdminContact)
 admin.site.register(Stagiaire, AdminStagiaire)

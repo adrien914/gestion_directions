@@ -34,6 +34,9 @@ urlpatterns = [
     path('create_or_modify_contact/', gestionnaire_views.createOrModifyContact.as_view(), name='create_or_modify_hebergeur'),
     path('delete_contact/', gestionnaire_views.DeleteContact.as_view(), name='delete_hebergeur'),
     path('save_stagiaire/', gestionnaire_views.SaveStagiaire.as_view(), name='save_stagiaire'),
+    path("create_ddsp/", gestionnaire_views.CreateDdsp.as_view(), name="create_ddsp"),
+    path("remove_ddsp/", gestionnaire_views.RemoveDdsp.as_view(), name="remove_ddsp"),
     path('admin/', admin.site.urls),
     path("logout/", LogoutView.as_view(), name="logout"),
+
 ]

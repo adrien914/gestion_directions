@@ -1,10 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
-from carte.models import Direction, Hebergement, Hebergeur, Stagiaire, Contact
-from gestionnaire.models import EtatSite
+from carte.models import Direction, Hebergement, Hebergeur, Stagiaire, Contact, EtatSite
 from django.core.exceptions import ObjectDoesNotExist
-import json
 
 
 class Gestionnaire(View):
@@ -209,5 +207,32 @@ class SaveStagiaire(View):
         except Exception as e:
             print(e)
             response = JsonResponse({"error": str(e)})
+            response.status_code = 500
+            return response
+
+class CreateDdsp(View):
+
+    @staticmethod
+    def post(request):
+        try:
+            name = request.POST["name"]
+            Direction.create(name=name, map_code=name)
+            return JsonResponse({"code": 200})
+        except:
+            response = JsonResponse({})
+            response.status_code = 500
+            return response
+
+
+class RemoveDdsp(View):
+
+    @staticmethod
+    def post(request):
+        try:
+            name = request.POST["name"]
+            Direction.objects.get(name=name).delete()
+            return JsonResponse({"code": 200})
+        except:
+            response = JsonResponse({})
             response.status_code = 500
             return response
