@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if direction %}{{ direction.name }}{% else %}Déplacements{% endif %}{% endblock %}
+
+{% block head %}
+    <script>
+    function set_enter_as_submit(modal_id, button_id) {
+
+        const children = $(modal_id).find("form").children()
+        let inputs = children.find("input")
+        console.log(inputs)
+        //inputs.forEach(function (input) {
+            inputs.keypress(function (e) {
+                if (e.which === 13) {
+                    if ($(modal_id).hasClass("show"))
+                        $(button_id).click();
+                }
+            });
+        //})
+    }
+    </script>
+    <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
+{% endblock %}
+
+{% block body %}
+    <script>$('#navbar_deplacements').addClass("active")</script>
+    <div class="text-center">
+        <section id="deplacements_section" class="mt-2">
+                <div class="div-section">
+                    <h2 class="col-12">Déplacements</h2>
+                    <div id="deplacements-buttons" class="col-12 btn-toolbar">
+                    {% for deplacement in deplacements %}
+
+                        <!-- Boutons pour ouvrir le modal correspondant et supprimer l'deplacement -->
+                        <button id="deplacement_edit_button{{ deplacement.id }}"
+                                type="button" class="btn btn-info mt-1 mb-1 ml-auto col-5 border-dark zoom" data-toggle="modal"
+                                data-target="#deplacement-modal{{ deplacement.id }}">{{ deplacement.destination }} le {{ deplacement.date|date:"d/m/Y" }}</button>
+                        <button id="deplacement_delete_button{{ deplacement.id }}"
+                                onclick="delete_deplacement({{ deplacement.id }}, '{{ csrf_token }}')"
+                                type="button" class="btn btn-danger mt-1 mr-auto mb-1 border-dark zoom faa-parent animated-hover"><i class="far fa-trash-alt faa-trash-alt  faa-4x"></i></button>
+                        <!-- _______________________________________________________________________ -->
+                        <!-- Modal correspondant a l'deplacement -->
+                        <div class="modal fade" id="deplacement-modal{{ deplacement.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Infos sur {{ deplacement.email }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form id="deplacement_form_{{ deplacement.id }}">
+                                  <div class="form-group">
+                                    <label for="deplacement_destination{{ deplacement.id }}" class="col-form-label">Destination:</label>
+                                    <input autocomplete="off" type="text" class="form-control" id="deplacement_destination{{ deplacement.id }}" value="{{ deplacement.destination }}">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="deplacement_date{{ deplacement.id }}" class="col-form-label">Date:</label>
+                                    <input autocomplete="off" type="date" class="form-control" id="deplacement_date{{ deplacement.id }}" value="{{ deplacement.date|date:"Y-m-d" }}">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="deplacement_commentaires{{ deplacement.id }}" class="col-form-label">Commentaires:</label>
+                                    <textarea class="form-control" id="deplacement_commentaires{{ deplacement.id }}" >{{ deplacement.commentaires }}</textarea>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                <button id="modify_button_deplacement{{ deplacement.id }}" type="button" class="btn btn-primary" onclick="modifier_deplacement({{ deplacement.id }}, '{{ csrf_token }}')">Modifier</button>
+                              </div>
+                            <script>set_enter_as_submit("#deplacement-modal{{ deplacement.id }}", "#modify_button_deplacement{{ deplacement.id }}")</script>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- ____________________________________________________ -->
+                        {% endfor %}
+                        <div id="end_deplacements" class="w-100"></div>
+                        <!-- Bouton et modal pour créer un nouvel hébergeur -->
+                        <button type="button" id="deplacement_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto border-dark zoom" data-toggle="modal"
+                                data-target="#deplacement-modal_create"><i class="far fa-plus-square"></i></button>
+                        <div class="modal fade" id="deplacement-modal_create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Nouvel deplacement</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form id="deplacement_form_create">
+                                  <div class="form-group">
+                                    <label for="deplacement_destination_create" class="col-form-label">Destination:</label>
+                                    <input autocomplete="off" type="text" class="form-control" id="deplacement_destination_create" value="">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="deplacement_date_create" class="col-form-label">Date:</label>
+                                    <input autocomplete="off" type="date" class="form-control" id="deplacement_date_create" value="">
+                                  </div>
+                                    <div class="form-group">
+                                    <label for="deplacement_commentaires_create" class="col-form-label">Commentaires:</label>
+                                    <textarea class="form-control" id="deplacement_commentaires_create" ></textarea>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                <button id="modify_button_deplacement_create" type="button" class="btn btn-primary" onclick="modifier_deplacement('_create', '{{ csrf_token }}')">Créer</button>
+                              </div>
+                                <script>set_enter_as_submit("#deplacement-modal_create", "#modify_button_deplacement_create")</script>
+                            </div>
+                          </div>
+                        </div>
+                    <!-- __________________________________________________________ -->
+                    </div>
+                <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                            <div class="alert" style="display: none" id="alert_div_deplacements"></div>
+                        </div>
+                </div>
+            </section>
+    </div>
+    <script src="{% static 'deplacement.js' %}"></script>
+{% endblock %}

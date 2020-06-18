@@ -1,5 +1,6 @@
 from django.db import models
 from colorfield.fields import ColorField
+from django.contrib.auth.models import User
 
 
 class Hebergement(models.Model):
@@ -64,6 +65,17 @@ class Direction(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Deplacement(models.Model):
+    destination = models.CharField(max_length=255, default=None, null=True, blank=True)
+    date = models.DateTimeField()
+    commentaires = models.CharField(max_length=255, default=None, null=True, blank=True)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.destination
+
 
 class Contact(models.Model):
     nom = models.CharField(max_length=255, default=None, null=True, blank=True)

@@ -10,7 +10,7 @@
     {% block head %}{% endblock %}
 </head>
 
-<body>
+<body class="bg-dark">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
               <ul class="navbar-nav left-0 text-center">
@@ -20,9 +20,13 @@
                 <li class="nav-item" id="navbar_gestion" >
                     <a class="nav-link btn btn-secondary" href="{% url 'gestionnaire_empty'%}">Gestion</a>
                 </li>
-
+                  <li class="nav-item" id="navbar_deplacements" >
+                    <a class="nav-link btn btn-secondary" href="{% url 'deplacements'%}">Déplacements</a>
+                </li>
               </ul>
             <ul class="navbar-nav ml-auto text-center">
+                {% block navbar %}
+                {% endblock %}
                 <li class="nav-item">
                     <a class="nav-link btn btn-secondary" href="{% url 'logout' %}">Se déconnecter</a>
                 </li>

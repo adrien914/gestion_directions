@@ -25,8 +25,14 @@ function modifier_contact(id, direction, csrf_token){
             else
                 add_contact_button(data.contact_data, csrf_token)
         },
-        error: function (error) {
-            console.log("error = " + error)
+        error: function (response) {
+            $(`#contact-modal${id}`).modal('hide')
+            div = $('#alert_div_contact')
+            div.addClass("alert-danger")
+            if (response.status === 401)
+                div.empty().html("Vous n'avez pas la permission de modifier celà").fadeIn(1000).delay(3000).fadeOut(600);
+            else
+                div.empty().html("Erreur a la modification").fadeIn(1000).delay(3000).fadeOut(600);
         }
     })
 }
@@ -41,6 +47,14 @@ function delete_contact(id, csrf_token) {
             delete_button = $(`#contact_delete_button${id}`)
             edit_button.remove()
             delete_button.remove()
+        },
+        error: function (response) {
+            div = $('#alert_div_contact')
+            div.addClass("alert-danger")
+            if (response.status === 401)
+                div.empty().html("Vous n'avez pas la permission de modifier celà").fadeIn(1000).delay(3000).fadeOut(600);
+            else
+                div.empty().html("Erreur a la modification").fadeIn(1000).delay(3000).fadeOut(600);
         }
     })
 }

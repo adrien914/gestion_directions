@@ -162,3 +162,13 @@ input[type=submit] {
 .zoom:hover {
   transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
+
+input[type="text"], textarea {
+  background : #ffffff !important;;
+}
+
+.div-section {
+  background: gray;
+  text-align: center;
+  border-radius: 10px;
+}

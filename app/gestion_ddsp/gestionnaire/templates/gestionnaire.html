@@ -6,18 +6,14 @@
 {% block head %}
     <script>
     function set_enter_as_submit(modal_id, button_id) {
-        $(modal_id).keypress(function (e) {
-            if (e.which === 13) {
-                $(button_id).click();
-            }
-        });
         const children = $(modal_id).find("form").children()
         let inputs = children.find("input")
         console.log(inputs)
         //inputs.forEach(function (input) {
             inputs.keypress(function (e) {
                 if (e.which === 13) {
-                    $(button_id).click();
+                    if ($(modal_id).hasClass("show"))
+                        $(button_id).click();
                 }
             });
         //})
@@ -28,7 +24,7 @@
 
 {% block body %}
     <script>$('#navbar_gestion').addClass("active")</script>
-    <div class="text-center jumbotron">
+    <div class="text-center">
         <section id="search_input_section" class="row text-center">
             <form autocomplete="off" id="search_form" class="row ml-auto mr-auto" action="">
               <div class="autocomplete" style="width:300px; margin-left: auto">
@@ -47,15 +43,31 @@
         </section>
         {% if direction %}
             <section id="site_section">
-                <div class="bg-white text-center rounded">
+                <div class="div-section">
                     <h2 class="col-12">Infos du site</h2>
-                    <input type="text" id="url_site" value="{{ direction.url_site }}">
-                    <input type="text" id="version_joomla" value="{{ direction.version_joomla }}" onclick="set_version_joomla()">
+                <div class="row ml-auto mr-auto">
+                    <div class="ml-auto w-50">
+                        <input type="text" class="col-12 text-center form-control" id="url_site"
+                               autocomplete="off" placeholder="url du site" value="{% if direction.url_site %}{{ direction.url_site }}{% endif %}">
+                    </div>
+                    <a href="{{ direction.url_site }}" class="btn btn-warning border-dark ml-1 mr-auto zoom " target="_blank">
+                        <i class="fa fa-chevron-circle-right h-100"></i>
+                    </a>
+                </div>
+                    <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                        <div class="alert" style="display: none" id="alert_div_url"></div>
+                    </div>
+                    <input type="text" class="col-4 text-center m-auto form-control" id="version_joomla"
+                           autocomplete="off" placeholder="version du joomla"
+                           value="{% if direction.version_joomla %}{{ direction.version_joomla }}{% endif %}">
+                    <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                        <div class="alert" style="display: none" id="alert_div_version"></div>
+                    </div>
                 </div>
             </section>
-            <section id="etat_site_section">
-                <div class="bg-white text-center rounded">
-                    <h2 class="col-12">Etat du site</h2>
+            <section id="etat_site_section" class="mt-2">
+                <div class="div-section">
+                    <h2 class="col-12">État du site</h2>
                     <div class="col-12 btn-toolbar">
                         {% for etat_site in etats_site %}
                             <button id="{{ etat_site.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-2 border-dark zoom" style="background: {{ etat_site.color }}"
@@ -73,8 +85,8 @@
                 </div>
             </section>
             <section id="hebergement_section" class="mt-2">
-                <div class="bg-white text-center rounded">
-                    <h2 class="col-12">Hebergement</h2>
+                <div class="div-section">
+                    <h2 class="col-12">Hébergement</h2>
                     <div class="col-12 btn-toolbar">
                         {% for hebergement in hebergements %}
                             <button id="{{ hebergement.type }}" class="btn btn-light mt-1 mb-1 ml-auto mr-auto col-2 border-dark zoom"
@@ -90,8 +102,8 @@
                 </div>
             </section>
             <section id="hebergeurs_section" class="mt-2">
-                <div class="bg-white text-center rounded">
-                    <h2 class="col-12">Hebergeurs</h2>
+                <div class="div-section">
+                    <h2 class="col-12">Hébergeurs</h2>
                     <div id="hebergeurs-buttons" class="col-12 btn-toolbar">
                     {% for hebergeur in hebergeurs %}
 
@@ -117,19 +129,19 @@
                                 <form id="hebergeur_form_{{ hebergeur.id }}">
                                   <div class="form-group">
                                     <label for="hebergeur_nom{{ hebergeur.id }}" class="col-form-label">Nom:</label>
-                                    <input type="text" class="form-control" id="hebergeur_nom{{ hebergeur.id }}" value="{{ hebergeur.nom }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_nom{{ hebergeur.id }}" value="{{ hebergeur.nom }}">
                                   </div>
                                   <div class="form-group">
                                     <label for="hebergeur_prenom{{ hebergeur.id }}" class="col-form-label">Prénom:</label>
-                                    <input type="text" class="form-control" id="hebergeur_prenom{{ hebergeur.id }}" value="{{ hebergeur.prenom }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_prenom{{ hebergeur.id }}" value="{{ hebergeur.prenom }}">
                                   </div>
                                     <div class="form-group">
                                     <label for="hebergeur_email{{ hebergeur.id }}" class="col-form-label">Email:</label>
-                                    <input type="text" class="form-control" id="hebergeur_email{{ hebergeur.id }}" value="{{ hebergeur.email }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_email{{ hebergeur.id }}" value="{{ hebergeur.email }}">
                                   </div>
                                     <div class="form-group">
                                     <label for="hebergeur_tel{{ hebergeur.id }}" class="col-form-label">Téléphone:</label>
-                                    <input type="text" class="form-control" id="hebergeur_tel{{ hebergeur.id }}" value="{{ hebergeur.telephone }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_tel{{ hebergeur.id }}" value="{{ hebergeur.telephone }}">
                                   </div>
                                     <div class="form-group">
                                     <label for="hebergeur_autres{{ hebergeur.id }}" class="col-form-label">Autres:</label>
@@ -164,19 +176,19 @@
                                 <form id="hebergeur_form_create">
                                   <div class="form-group">
                                     <label for="hebergeur_nom_create" class="col-form-label">Nom:</label>
-                                    <input type="text" class="form-control" id="hebergeur_nom_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_nom_create" value="">
                                   </div>
                                   <div class="form-group">
                                     <label for="hebergeur_prenom_create" class="col-form-label">Prénom:</label>
-                                    <input type="text" class="form-control" id="hebergeur_prenom_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_prenom_create" value="">
                                   </div>
                                     <div class="form-group">
                                     <label for="hebergeur_email_create" class="col-form-label">Email:</label>
-                                    <input type="text" class="form-control" id="hebergeur_email_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_email_create" value="">
                                   </div>
                                     <div class="form-group">
                                     <label for="hebergeur_tel_create" class="col-form-label">Téléphone:</label>
-                                    <input type="text" class="form-control" id="hebergeur_tel_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="hebergeur_tel_create" value="">
                                   </div>
                                     <div class="form-group">
                                     <label for="hebergeur_autres_create" class="col-form-label">Autres:</label>
@@ -194,11 +206,14 @@
                         </div>
                     <!-- __________________________________________________________ -->
                     </div>
+                <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                            <div class="alert" style="display: none" id="alert_div_hebergeurs"></div>
+                        </div>
                 </div>
             </section>
             <section id="contacts_section" class="mt-2">
-                <div class="bg-white text-center rounded">
-                    <h2 class="col-12">Contacts</h2>
+                <div class="div-section ">
+                    <h2 class="col-12">Contacts Webmestres</h2>
                     <div id="contacts-buttons" class="col-12 btn-toolbar">
                     {% for contact in contacts %}
 
@@ -224,19 +239,19 @@
                                 <form id="contact_form_{{ contact.id }}">
                                   <div class="form-group">
                                     <label for="contact_nom{{ contact.id }}" class="col-form-label">Nom:</label>
-                                    <input type="text" class="form-control" id="contact_nom{{ contact.id }}" value="{{ contact.nom }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_nom{{ contact.id }}" value="{{ contact.nom }}">
                                   </div>
                                   <div class="form-group">
                                     <label for="contact_prenom{{ contact.id }}" class="col-form-label">Prénom:</label>
-                                    <input type="text" class="form-control" id="contact_prenom{{ contact.id }}" value="{{ contact.prenom }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_prenom{{ contact.id }}" value="{{ contact.prenom }}">
                                   </div>
                                     <div class="form-group">
                                     <label for="contact_email{{ contact.id }}" class="col-form-label">Email:</label>
-                                    <input type="text" class="form-control" id="contact_email{{ contact.id }}" value="{{ contact.email }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_email{{ contact.id }}" value="{{ contact.email }}">
                                   </div>
                                     <div class="form-group">
                                     <label for="contact_tel{{ contact.id }}" class="col-form-label">Téléphone:</label>
-                                    <input type="text" class="form-control" id="contact_tel{{ contact.id }}" value="{{ contact.telephone }}">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_tel{{ contact.id }}" value="{{ contact.telephone }}">
                                   </div>
                                     <div class="form-group">
                                     <label for="contact_autres{{ contact.id }}" class="col-form-label">Autres:</label>
@@ -251,9 +266,11 @@
                                 <script>set_enter_as_submit("#contact-modal{{ contact.id }}", "#modify_button_contact{{ contact.id }}")</script>
                             </div>
                           </div>
+
                         </div>
                         <!-- ____________________________________________________ -->
                         {% endfor %}
+
                         <div id="end_contacts" class="w-100"></div>
                         <!-- Bouton et modal pour créer un nouveau contact -->
                         <button type="button" id="contact_edit_button_create" class="btn btn-warning mt-1 mb-1 ml-auto mr-auto border-dark zoom" data-toggle="modal"
@@ -271,19 +288,19 @@
                                 <form id="contact_form_create">
                                   <div class="form-group">
                                     <label for="contact_nom_create" class="col-form-label">Nom:</label>
-                                    <input type="text" class="form-control" id="contact_nom_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_nom_create" value="">
                                   </div>
                                   <div class="form-group">
                                     <label for="contact_prenom_create" class="col-form-label">Prénom:</label>
-                                    <input type="text" class="form-control" id="contact_prenom_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_prenom_create" value="">
                                   </div>
                                     <div class="form-group">
                                     <label for="contact_email_create" class="col-form-label">Email:</label>
-                                    <input type="text" class="form-control" id="contact_email_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_email_create" value="">
                                   </div>
                                     <div class="form-group">
                                     <label for="contact_tel_create" class="col-form-label">Téléphone:</label>
-                                    <input type="text" class="form-control" id="contact_tel_create" value="">
+                                    <input autocomplete="off" type="text" class="form-control" id="contact_tel_create" value="">
                                   </div>
                                     <div class="form-group">
                                     <label for="contact_autres_create" class="col-form-label">Autres:</label>
@@ -301,10 +318,14 @@
                         </div>
                     <!-- __________________________________________________________ -->
                     </div>
+                <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                            <div class="alert" style="display: none" id="alert_div_contact"></div>
+                        </div>
                 </div>
             </section>
+
             <section id="stagaires_section" class="mt-2">
-                <div class="bg-white text-center rounded">
+                <div class="div-section">
                     <h2 class="col-12 form-group">Stagiaires</h2>
                     <textarea class="col-10 m-auto form-control" id="stagiaire-input" placeholder="Informations sur les stagiaires">{{ stagiaire.divers }}</textarea>
                     <div class="text-center col-8 m-auto pt-2" style="height: 10%">
@@ -328,7 +349,7 @@
             <form id="nom_ddsp_modal_create">
               <div class="form-group">
                 <label for="nom_ddsp" class="col-form-label">Nom:</label>
-                <input type="text" class="form-control" id="nom_ddsp">
+                <input autocomplete="off" type="text" class="form-control" id="nom_ddsp">
               </div>
             </form>
           </div>
@@ -351,5 +372,12 @@
     <script src="{% static 'stagiaires.js' %}"></script>
     <script src="{% static 'create_ddsp.js' %}"></script>
     <script src="{% static 'remove_ddsp.js' %}"></script>
-    <script>set_listener('{{ csrf_token }}'); set_listener_stagiaire('{{ csrf_token }}')</script>
+    <script src="{% static 'joomla_manager.js' %}"></script>
+    <script src="{% static 'deplacement.js' %}"></script>
+    <script>
+        set_listener('{{ csrf_token }}')
+        set_listener_stagiaire('{{ csrf_token }}')
+        set_listener_url('{{ csrf_token }}')
+        set_listener_version('{{ csrf_token }}')
+    </script>
 {% endblock %}

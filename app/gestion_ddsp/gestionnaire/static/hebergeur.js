@@ -25,8 +25,14 @@ function modifier_hebergeur(id, direction, csrf_token){
             else
                 add_hebergeur_button(data.hebergeur_data, csrf_token)
         },
-        error: function (error) {
-            console.log("error = " + error)
+        error: function (response) {
+            $(`#hebergeur-modal${id}`).modal('hide')
+            div = $('#alert_div_hebergeurs')
+            div.addClass("alert-danger")
+            if (response.status === 401)
+                div.empty().html("Vous n'avez pas la permission de modifier celà").fadeIn(1000).delay(3000).fadeOut(600);
+            else
+                div.empty().html("Erreur a la modification").fadeIn(1000).delay(3000).fadeOut(600);
         }
     })
 }

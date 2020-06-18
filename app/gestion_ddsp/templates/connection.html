@@ -39,7 +39,7 @@
 					</span>
 					
 					
-					<div class="wrap-input100 validate-input" data-validate = "Nom d'utilisateur requis">
+					<div class="wrap-input100 validate-input" data-validate="Nom d'utilisateur requis">
 						<input class="input100" type="text" name="username">
 						<span class="focus-input100"></span>
 						<span class="label-input100">Nom d'utilisateur</span>
@@ -67,6 +67,7 @@
 							Se connecter
 						</button>
 					</div>
+
 				</form>
 				<div class="login100-more" style="background-image: url('{% static "connection/logo-police.png" %}');">
 				</div>
@@ -80,6 +81,21 @@
 	
 <!--===============================================================================================-->
 	<script src="{% static 'jquery-3.5.1.min.js' %}"></script>
+    <script>
+        const inputs = $('.input100')
+        console.log(inputs)
+        input = inputs[0]
+        console.log(input)
+        inputs.on('input', function (elem) {
+            if(this.value) {
+                if ( !this.className.includes("has-val"))
+                    this.className += " has-val"
+            } else {
+                if ( this.className.includes("has-val"))
+                    this.className = "input100"
+            }
+        })
+    </script>
 <!--===============================================================================================-->
 	<script src="{% static 'connection/vendor/animsition/js/animsition.js' %}"></script>
 <!--===============================================================================================-->
@@ -94,6 +110,6 @@
     <script src="{% static 'connection/vendor/countdowntime/countdowntime.js' %}"></script>
 <!--===============================================================================================-->
 	<script src="{% static 'connection/connection.js' %}"></script>
-
+    <script src="{% static 'sweetalert2.js' %}"></script>
 </body>
 </html>

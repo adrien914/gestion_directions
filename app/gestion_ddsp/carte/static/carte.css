@@ -1,0 +1,12 @@
+.div-section {
+  background: gray;
+  text-align: center;
+}
+
+.jvectormap-region, .jvectormap-element {
+  font-size: 6.5pt !important;
+}
+
+.no-pointer {
+  pointer-events: none;
+}

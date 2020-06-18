@@ -4,20 +4,55 @@
 {% block title %}Carte des directions{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{% static 'jquery-jvectormap-2.0.5.css' %}">
-    <link rel="stylesheet" href="{% static 'gestionnaire.css' %}">
+    <link rel="stylesheet" href="{% static 'carte.css' %}">
     <script src="{% static 'jquery-jvectormap-2.0.5.min.js' %}"></script>
     <script src="{% static 'jquery-jvectormap-fr-merc.js' %}"></script>
+    <script src="{% static 'jsPDF/dist/jspdf.min.js' %}"></script>
+    <script src="{% static 'html2canvas.min.js' %}"></script>
+    <script src="{% static 'sweetalert2.js' %}"></script>
+{% endblock %}
 
+{% block navbar %}
+    <a class="btn text-center" onclick="get_pdf()"><i class="fa fa-print h-100 text-white" title="Imprimer"></i></a>
 {% endblock %}
 
 {% block body %}
-        <div id="map" class="col-12 h-75"></div>
+    <div id="body">
+    <section id="map_section" class="div-section">
+        <h2 class="col-12">État du déploiement des sites intranet DDSP Joomla et DISA</h2>
+        <p class="col-10 m-auto" id="paragraph">{{ paragraph }}</p>
+        <div id="map" class="col-12 h-75 mb-2"></div>
         <script>
+            function get_pdf() {
+                Swal.fire({
+                    title: 'Veuillez patienter pendant que nous préparons votre pdf',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    onOpen: () => {
+                      swal.showLoading();
+                    }
+                  })
+                let element = document.getElementById('body')
+                width = element.offsetWidth
+                height = element.offsetHeight
+                html2canvas(element, { dpi: 100, scale: 2 }).then(function (canvas) {
+                        let doc = new jsPDF('landscape', 'px', [width, height])
+                        const img = canvas.toDataURL("image/png")
+                        doc.addImage(img, 'PNG', 0, 0, width, height);
+                        doc.save('test.pdf');
+                        Swal.close()
+                    })
+            }
+        </script>
+        <script>
+            directions = {}
+            {% for direction in directions %}
+                directions['{{ direction.map_code }}'] = '{{ direction.name }}'
+            {% endfor %}
             $('#navbar_carte').addClass("active")
             map = $('#map').vectorMap({
                 map: 'fr_merc',
-                height: 700,
-                width: 600,
+                backgroundColor: "gray",
                 onRegionTipShow: function(e, el, code){
                     document.getElementsByClassName("jvectormap-tip")[0].style.visibility = "hidden"
                     $.ajax({
@@ -37,28 +72,52 @@
                 onRegionClick: function (e, code) {
                     location.href = "{% url 'gestionnaire' "placeholder" %}".replace("placeholder", code)
                 },
+                regionLabelStyle: {
+                  initial: {
+                    fill: '#B90E32'
+                  },
+                  hover: {
+                    fill: 'black'
+                  }
+                },
                 series: {
                   regions: [{
-                    values: {% autoescape off %}{{ regions_colors }}{% endautoescape %}
+                      values: {% autoescape off %}{{ regions_colors }}{% endautoescape %},
                   }]
+                },
+                labels: {
+                    regions: {
+                        render: function (code) {
+                            return directions[code].split('-')[1]
+                        },
+                        offsets: function (code) {
+                            return {
+                                '54': [0, 30],
+                                '33': [0, 10],
+                                '29': [10, 0]
+                            }[code.split('-')[1]]
+                        }
+                    }
                 }
             })
         </script>
-    <div class="bg-white text-center rounded">
-        <h2 class="col-12">Autres directions</h2>
-        <div class="col-12 btn-toolbar text-center">
-            {% for direction in directions %}
-                {% if 'DDSP-' not in direction.name %}
-                    <div class="col-4 ml-auto mr-auto">
-                    <a href="/gestion/{{ direction.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-10 border-dark zoom" style="background: {{ direction.etat_site.color }}">
-                        {{ direction.name }}
-                    </a>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div class="text-center col-8 m-auto pt-2" style="height: 10%">
-            <div class="alert" id="alert_div_etat_site"></div>
-        </div>
+    </section>
+    <section id="other_dirs_section" class="div-section">
+            <h2 class="col-12">Autres directions</h2>
+            <div class="col-12 btn-toolbar text-center">
+                {% for direction in directions %}
+                    {% if 'DDSP-' not in direction.name %}
+                        <div class="col-4 ml-auto mr-auto">
+                        <a href="/gestion/{{ direction.name }}" class="btn mt-1 mb-1 ml-auto mr-auto col-10 border-dark zoom" style="background: {{ direction.etat_site.color }}">
+                            {{ direction.name }}
+                        </a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="text-center col-8 m-auto pt-2" style="height: 10%">
+                <div class="alert" id="alert_div_etat_site"></div>
+            </div>
+    </section>
     </div>
 {% endblock %}

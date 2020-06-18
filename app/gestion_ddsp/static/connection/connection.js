@@ -43,6 +43,12 @@ function login(csrf_token) {
                 csrfmiddlewaretoken: csrf_token},
             success: function () {
                 location.href = '/'
+            },
+            error: function () {
+                Swal.fire({
+                    title: "Erreur a la connexion, vérifiez vos identifiants svp",
+                    icon: 'error',
+                })
             }
         })
     });

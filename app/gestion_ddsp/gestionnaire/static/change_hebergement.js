@@ -19,11 +19,14 @@ function change_hebergement(type_hebergement, direction, csrf_token) {
             /* Show the checkmark on the button corresponding to the new state */
             show_active_state(data)
         },
-        error: function () {
+        error: function (response) {
             /* get the alert div to show the error message in it */
             div = $('#alert_div_hebergement')
             div.addClass("alert-danger")
-            div.empty().html("Erreur a la modification").fadeIn(1000).delay(3000).fadeOut(300);
+            if (response.status === 401)
+                div.empty().html("Vous n'avez pas la permission de modifier celà").fadeIn(1000).delay(3000).fadeOut(600);
+            else
+                div.empty().html("Erreur a la modification").fadeIn(1000).delay(3000).fadeOut(600);
         }
     })
 }
